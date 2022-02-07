@@ -45,11 +45,12 @@ class MovieSeachDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final moviesProvider = Provider.of<MoviesProvider>(context, listen: false);
     if (query.isEmpty) {
       return _emptyContainer();
     }
-    return FutureBuilder(
+    final moviesProvider = Provider.of<MoviesProvider>(context, listen: false);
+    moviesProvider.getSuggestionByQuery(query);
+    return StreamBuilder(
         builder: (_, AsyncSnapshot<List<Movie>> snapshot) {
           if (!snapshot.hasData) return _emptyContainer();
           final movies = snapshot.data!;
@@ -58,7 +59,7 @@ class MovieSeachDelegate extends SearchDelegate {
             itemCount: movies.length,
           );
         },
-        future: moviesProvider.searchMovies(query));
+        stream: moviesProvider.suggestionStream);
   }
 }
 
